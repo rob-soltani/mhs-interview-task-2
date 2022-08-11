@@ -25,6 +25,8 @@ class StoreCustomer
 
         // Register the AddDashboardWidgets function with WordPress's wp_dashboard_setup hook
         add_action('wp_dashboard_setup', 'MHS_INTERVIEW_TASK_2\StoreCustomer::AddDashboardWidgets', 13);
+
+
     }
 
 
@@ -63,7 +65,8 @@ class StoreCustomer
         }
     }
 
-    public static function RemoveProfileAccess()
+
+    private static function IsUserStoreCustomer()
     {
 
         // Get current logged in user
@@ -80,13 +83,27 @@ class StoreCustomer
 
             if ($CurrentUser_IsStoreCustomer) {
 
-                // Remove the link to the profile page from the admin menu.
-                remove_menu_page('profile.php');
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 
-                // Prevent unauthorized access to the profile page
-                if (defined('IS_PROFILE_PAGE') && IS_PROFILE_PAGE === true) {
-                    wp_die('You are not permitted to access the profile page. <a href="' . get_home_url() . '">Go to homepage<a>');
-                }
+    public static function RemoveProfileAccess()
+    {
+
+        // Apply access removal only if the user is a Store Customer
+        if (StoreCustomer::IsUserStoreCustomer()) {
+
+            // Remove the link to the profile page from the admin menu.
+            remove_menu_page('profile.php');
+
+            // Prevent unauthorized access to the profile page
+            if (defined('IS_PROFILE_PAGE') && IS_PROFILE_PAGE === true) {
+                wp_die('You are not permitted to access the profile page. <a href="' . get_home_url() . '">Go to homepage<a>');
             }
         }
     }
@@ -94,27 +111,19 @@ class StoreCustomer
     public static function AddDashboardWidgets()
     {
 
-        // Get current logged in user
-        $CurrentUser = wp_get_current_user();
 
-        // Check if the current user if not null
-        if (!is_null($CurrentUser)) {
+        // Add widgets only if the user is a Store Customer
+        if (StoreCustomer::IsUserStoreCustomer()) {
 
-            // Get current user roles
-            $CurrentUser_Roles = (array) $CurrentUser->roles;
+            // Add the "At a Glance" widget to store customers' dashboard
+            wp_add_dashboard_widget('dashboard_right_now', __('At a Glance'), 'wp_dashboard_right_now');
 
-            // Check whether current user is a "Store Customer"
-            $CurrentUser_IsStoreCustomer = in_array('mhs_interview_task_2_store_customer', $CurrentUser_Roles, true);
+            // Add the "Quick Draft" widget to store customers' dashboard
+            wp_add_dashboard_widget('dashboard_quick_press', __('Quick Draft'), 'wp_dashboard_quick_press');
 
-            if ($CurrentUser_IsStoreCustomer) {
-
-                // Add the "At a Glance" widget to store customers' dashboard
-                wp_add_dashboard_widget('dashboard_right_now', __('At a Glance'), 'wp_dashboard_right_now');
-
-                // Add the "Quick Draft" widget to store customers' dashboard
-                wp_add_dashboard_widget('dashboard_quick_press', __('Quick Draft'), 'wp_dashboard_quick_press');
-
-            }
         }
     }
+
+
+
 }
