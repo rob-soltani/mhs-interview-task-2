@@ -26,7 +26,8 @@ class StoreCustomer
         // Register the AddDashboardWidgets function with WordPress's wp_dashboard_setup hook
         add_action('wp_dashboard_setup', 'MHS_INTERVIEW_TASK_2\StoreCustomer::AddDashboardWidgets', 13);
 
-
+        // Register the RemoveUnwantedItemsFromAdminMenu function with WordPress's admin_menu hook
+        add_action('admin_menu', 'MHS_INTERVIEW_TASK_2\StoreCustomer::RemoveUnwantedItemsFromAdminMenu', 14);
     }
 
 
@@ -124,6 +125,22 @@ class StoreCustomer
         }
     }
 
+    public static function RemoveUnwantedItemsFromAdminMenu()
+    {
+        // Add widgets only if the user is a Store Customer
+        if (StoreCustomer::IsUserStoreCustomer()) {
 
+            // Remove the Posts link from the admin menu
+            remove_menu_page( 'edit.php' );
+
+            // Remove the Comments link from the admin menu
+            remove_menu_page( 'edit-comments.php' );
+
+            // Remove the Tools link from the admin menu
+            remove_menu_page( 'tools.php' );
+  
+        }
+
+    }
 
 }
