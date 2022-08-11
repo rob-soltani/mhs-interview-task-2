@@ -22,6 +22,9 @@ class StoreCustomer
 
         // Register the RemoveProfileAccess function with WordPress's admin_menu hook
         add_action('admin_menu', 'MHS_INTERVIEW_TASK_2\StoreCustomer::RemoveProfileAccess', 12);
+
+        // Register the AddDashboardWidgets function with WordPress's wp_dashboard_setup hook
+        add_action('wp_dashboard_setup', 'MHS_INTERVIEW_TASK_2\StoreCustomer::AddDashboardWidgets', 13);
     }
 
 
@@ -55,8 +58,8 @@ class StoreCustomer
         // Check to see whether the role exists
         if (!is_null($StoreCustomerExistingRole)) {
             $StoreCustomerExistingRole->add_cap('read', true);
-            $StoreCustomerExistingRole->add_cap('edit_post', true);
-            $StoreCustomerExistingRole->add_cap('delete_post', true);
+            $StoreCustomerExistingRole->add_cap('edit_posts', true);
+            $StoreCustomerExistingRole->add_cap('delete_posts', true);
         }
     }
 
@@ -81,11 +84,36 @@ class StoreCustomer
                 remove_menu_page('profile.php');
 
                 // Prevent unauthorized access to the profile page
-                if ( defined('IS_PROFILE_PAGE') && IS_PROFILE_PAGE === true )
-                {
+                if (defined('IS_PROFILE_PAGE') && IS_PROFILE_PAGE === true) {
                     wp_die('You are not permitted to access the profile page. <a href="' . get_home_url() . '">Go to homepage<a>');
-                                  
                 }
+            }
+        }
+    }
+
+    public static function AddDashboardWidgets()
+    {
+
+        // Get current logged in user
+        $CurrentUser = wp_get_current_user();
+
+        // Check if the current user if not null
+        if (!is_null($CurrentUser)) {
+
+            // Get current user roles
+            $CurrentUser_Roles = (array) $CurrentUser->roles;
+
+            // Check whether current user is a "Store Customer"
+            $CurrentUser_IsStoreCustomer = in_array('mhs_interview_task_2_store_customer', $CurrentUser_Roles, true);
+
+            if ($CurrentUser_IsStoreCustomer) {
+
+                // Add the "At a Glance" widget to store customers' dashboard
+                wp_add_dashboard_widget('dashboard_right_now', __('At a Glance'), 'wp_dashboard_right_now');
+
+                // Add the "Quick Draft" widget to store customers' dashboard
+                wp_add_dashboard_widget('dashboard_quick_press', __('Quick Draft'), 'wp_dashboard_quick_press');
+
             }
         }
     }
