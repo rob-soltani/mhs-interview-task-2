@@ -127,7 +127,7 @@ class StoreCustomer
 
     public static function RemoveUnwantedItemsFromAdminMenu()
     {
-        // Add widgets only if the user is a Store Customer
+        // Remove items from menu only if the user is a Store Customer
         if (StoreCustomer::IsUserStoreCustomer()) {
 
             // Remove the Posts link from the admin menu
