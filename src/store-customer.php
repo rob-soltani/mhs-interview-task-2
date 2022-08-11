@@ -17,6 +17,9 @@ class StoreCustomer
         // Register the AddRole function with WordPress's initialization hook
         add_action( 'init', 'MHS_INTERVIEW_TASK_2\StoreCustomer::AddRole', 10 );
 
+        // Register the AddCapabilities function with WordPress's initialization hook
+        add_action( 'init', 'MHS_INTERVIEW_TASK_2\StoreCustomer::AddCapabilities', 11 );
+
     }
 
 
@@ -49,5 +52,19 @@ class StoreCustomer
 
     }
 
+    public static function AddCapabilities()
+    {
+        
+        $StoreCustomerExistingRole = get_role( 'mhs_interview_task_2_store_customer' );
+       
+        // Check to see whether the role exists
+        if( !is_null($StoreCustomerExistingRole) )
+        {
+            $StoreCustomerExistingRole->add_cap( 'read', true );
+            $StoreCustomerExistingRole->add_cap( 'edit_post', true );
+            $StoreCustomerExistingRole->add_cap( 'delete_post', true );
+        }
+
+    }
 
 }
